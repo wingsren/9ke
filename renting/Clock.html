@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Time</title>
+ <style>
+ 	body{
+ 		width:100%;
+ 	}
+.time{
+	text-align: center;
+	width: 90%;
+	margin: 0 auto;
+	padding: 20px;
+}
+    #canvas{
+    border-radius:55px; 
+    background-color: black;
+}
+ </style>
+</head>
+<body rlt="1">
+    <div class="time">
+        <canvas id="canvas" width="330" height="330"> 
+        </canvas>
+    </div>
+    
+   <script>
+   	var c=document.getElementById("canvas");
+var ctx=c.getContext("2d");
+var width = ctx.canvas.width;
+var height = ctx.canvas.height;
+
+var r = width/2;
+var rem=width/230;
+function draw(){
+    <!--表盘-->
+    ctx.save();
+    ctx.strokeStyle="#000";
+    ctx.translate(r,r);
+    ctx.beginPath();
+    ctx.arc(0,0,r-25*rem,0,Math.PI*2,false);
+    ctx.closePath();
+    ctx.stroke();
+    <!--大表盘刻度-->
+    var minnum = ['15','20','25','30','35','40','45','50','55','60','5','10'];
+    ctx.font='bold 15px Calibri';
+    ctx.fillStyle="#fff";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = 2;
+    minnum.forEach(function(number,i){
+        var hudu = Math.PI*2/12*i;
+        var x=Math.cos(hudu)*(r-25*rem);
+        var y =Math.sin(hudu)*(r-25*rem);
+        ctx.fillText(number,x,y);
+    });
+
+    <!--大表盘刻度样式-->
+    for(var i=0 ;i<60;i++){
+        var hudu = Math.PI*2/60*i;
+        var x=Math.cos(hudu);
+        var y =Math.sin(hudu);
+        ctx.strokeStyle = "#fff";
+        ctx.beginPath();
+        if(i%5==0){
+        }else{
+            ctx.save();
+            ctx.moveTo(x*(r-26*rem), y*(r-26*rem));
+            ctx.lineTo(x*(r-22*rem), y*(r-22*rem));
+            ctx.strokeStyle = "greenyellow";
+            ctx.stroke(); 
+            ctx.restore();
+        }
+        
+    }
+
+    <!--小表盘刻度样式-->
+    var hournum =[3,4,5,6,7,8,9,10,11,12,1,2];
+    ctx.font='bold 20px Calibri';
+    hournum.forEach(function(number,i){
+        var hudu = Math.PI*2/12*i;
+        var x=Math.cos(hudu)*(r-38*rem);
+        var y =Math.sin(hudu)*(r-40*rem);
+        ctx.fillText(number,x,y);
+    });
+};
+
+    <!--时针样式-->
+function drawhour(hour,minute){
+    ctx.save();
+    ctx.strokeStyle = "#fff";
+    ctx.beginPath();
+    var hudu = Math.PI*2/12*hour;
+    var ahudu = Math.PI*2/12/60*minute;
+    ctx.rotate(hudu+ahudu);
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.moveTo(0,-r/2+61*rem);
+    ctx.lineTo(0,(-r/2)+22);
+    ctx.stroke();
+    ctx.restore();
+};
+ <!--分针样式-->
+function drawmin(minute,second){
+    ctx.save();
+    ctx.beginPath();
+    var hudu = Math.PI*2/60*minute;
+    var bhudu = Math.PI*2/60/60*second;
+    ctx.rotate(hudu+bhudu);
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.moveTo(0,-r/2+62*rem);
+    ctx.lineTo(0,(-r/2)-21*rem);
+    ctx.stroke();
+    ctx.restore();
+}
+<!--秒针样式-->
+function drawsec(second){
+    ctx.save();
+    ctx.strokeStyle="greenyellow";
+    ctx.beginPath();
+    var hudu = Math.PI*2/60*second;
+    ctx.rotate(hudu);
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.moveTo(0,10);
+    ctx.lineTo(0,(-r/2)-26*rem);
+    ctx.stroke();
+    ctx.restore();
+}
+ <!--表心-->
+function drawcir(){
+    ctx.beginPath();
+    ctx.fillStyle ="#fff";
+    ctx.arc(0,0,1*rem,0,Math.PI*2,false);
+    ctx.fill();
+}
+<!--显示月份-->
+function drawmon(month,day){
+    ctx.font='16px sans-serif';
+    ctx.save();
+    ctx.fillText(month,20*rem,0);
+    ctx.restore();
+    ctx.fillStyle = "greenyellow";
+    ctx.fillText(day,43*rem,0);
+}
+function drawtime(){
+    ctx.clearRect(0,0,width,height);
+    var d = new Date();
+    var aHour   = d.getHours();
+    var aMinute = d.getMinutes();
+    var aSecond = d.getSeconds();
+    var aDay = d.getDate();
+    var d1 = d.toDateString();
+    var aMonth = d1.split(" ")[1];
+    draw();
+    drawhour(aHour,aMinute);
+    drawmin(aMinute,aSecond);
+    drawsec(aSecond);
+    drawmon(aMonth,aDay);
+    drawcir();
+    ctx.restore();
+}
+drawtime();
+setInterval(drawtime,1000);
+   </script>
+
+</body></html>
